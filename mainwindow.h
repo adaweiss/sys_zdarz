@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTimer>
+#include <Vector>
 namespace Ui {
 class MainWindow;
 }
@@ -18,6 +19,8 @@ class Machine {
     public:
     Machine(){timer=new QTimer;}
     void setBuffer(int i){buffer_capacity=i;}
+    int getBuffer(){return buffer_capacity;}
+
 };
 
 class Process {
@@ -26,6 +29,12 @@ public:
     int *times_at_machines;
     int size;
     void setProcess(int len);
+};
+
+
+class Element{
+    int nr_procesu;
+    int process_state; //na ktorej maszynie ma być teraz robiony
 };
 
 class MainWindow : public QMainWindow
@@ -42,8 +51,14 @@ class MainWindow : public QMainWindow
     QLabel *machine_buffers_label[5];
     QLabel *time_at_machines_label[5][10];
     QLineEdit *time_at_machines[5][10];
+    QLabel *nr_of_details_in_label[5];
+    QLineEdit  *nr_of_details_in[5];
+    QGridLayout *process_layout;
     Machine *machine_table;
     Process *process_table;
+    QLabel *machine_pic[5];
+    QLabel *machine_buf_pic[5][10];
+
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -55,6 +70,7 @@ private:
     int am_of_processes=5;
     int acctual_amount_of_machines;
     int acctual_amount_of_processes;
+    int *amount_of_details;
 public slots:
     void display_machines(int n);
     void display_process0_input();

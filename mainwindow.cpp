@@ -3,6 +3,7 @@
 #include <QString>
 #include<iostream>
 #include <QMessageBox>
+#include <QPixMap>
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -71,6 +72,7 @@ void MainWindow::display_machines(int n)
 void MainWindow::display_processes(int n)
 {
     acctual_amount_of_processes=nr_of_processes->value();
+
     for(int i=0;i<n; i++)  {
         processes_description[i]->setVisible(true);
         processes_description_label[i]->setVisible(true);
@@ -96,11 +98,15 @@ void MainWindow::display_process0_input(){
     time_at_machines_label[0][i]=new QLabel(this);
     time_at_machines[0][i]=new QLineEdit(this);
     time_at_machines_label[0][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
-
     mainLayout->addWidget(time_at_machines_label[0][i],2,4+2*i);
     mainLayout->addWidget(time_at_machines[0][i],2,4+2*i+1);
-
     }
+    nr_of_details_in_label[0]=new QLabel(this);
+    nr_of_details_in[0]=new QLineEdit(this);
+    nr_of_details_in_label[0]->setText(QString::fromLatin1("Nr of elem. to be made in 1"));
+    mainLayout->addWidget(nr_of_details_in_label[0],8,4);
+    mainLayout->addWidget(nr_of_details_in[0],8,5);
+
 }
 void MainWindow::display_process1_input(){
     QString order = processes_description[1]->text();
@@ -109,12 +115,16 @@ void MainWindow::display_process1_input(){
     a=order[i];
     time_at_machines_label[1][i]=new QLabel(this);
     time_at_machines[1][i]=new QLineEdit(this);
-    time_at_machines_label[1][1]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
-
+    time_at_machines_label[1][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
     mainLayout->addWidget(time_at_machines_label[1][i],3,4+2*i);
     mainLayout->addWidget(time_at_machines[1][i],3,4+2*i+1);
-
     }
+    nr_of_details_in_label[1]=new QLabel(this);
+    nr_of_details_in[1]=new QLineEdit(this);
+    nr_of_details_in_label[1]->setText(QString::fromLatin1("Nr of elem. to be made in 2"));
+    mainLayout->addWidget(nr_of_details_in_label[1],9,4);
+    mainLayout->addWidget(nr_of_details_in[1],9,5);
+
 }
 void MainWindow::display_process2_input(){
     QString order = processes_description[2]->text();
@@ -129,6 +139,11 @@ void MainWindow::display_process2_input(){
     mainLayout->addWidget(time_at_machines[2][i],4,4+2*i+1);
 
     }
+    nr_of_details_in_label[2]=new QLabel(this);
+    nr_of_details_in[2]=new QLineEdit(this);
+    nr_of_details_in_label[2]->setText(QString::fromLatin1("Nr of elem. to be made in 3"));
+    mainLayout->addWidget(nr_of_details_in_label[2],10,4);
+    mainLayout->addWidget(nr_of_details_in[2],10,5);
 }
 void MainWindow::display_process3_input(){
     QString order = processes_description[3]->text();
@@ -143,6 +158,11 @@ void MainWindow::display_process3_input(){
     mainLayout->addWidget(time_at_machines[3][i],5,4+2*i+1);
 
     }
+    nr_of_details_in_label[3]=new QLabel(this);
+    nr_of_details_in[3]=new QLineEdit(this);
+    nr_of_details_in_label[3]->setText(QString::fromLatin1("Nr of elem. to be made in 4"));
+    mainLayout->addWidget(nr_of_details_in_label[3],11,4);
+    mainLayout->addWidget(nr_of_details_in[3],11,5);
 }
 void MainWindow::display_process4_input(){
     QString order = processes_description[4]->text();
@@ -155,9 +175,12 @@ void MainWindow::display_process4_input(){
 
     mainLayout->addWidget(time_at_machines_label[4][i],6,4+2*i);
     mainLayout->addWidget(time_at_machines[4][i],6,4+2*i+1);
-
-
     }
+    nr_of_details_in_label[4]=new QLabel(this);
+    nr_of_details_in[4]=new QLineEdit(this);
+    nr_of_details_in_label[4]->setText(QString::fromLatin1("Nr of elem. to be made in 5"));
+    mainLayout->addWidget(nr_of_details_in_label[4],12,4);
+    mainLayout->addWidget(nr_of_details_in[4],12,5);
 }
 
 
@@ -203,5 +226,38 @@ void MainWindow::on_set_initials_clicked()
     }
 
     ui->tabWidget->setCurrentIndex(1);
+    amount_of_details=new int[acctual_amount_of_processes];
+    for(int i=0;i<acctual_amount_of_processes;i++){
+        amount_of_details[i]=nr_of_details_in[i]->text().toInt();
+    }
+
+   QPixmap m[5];
+   m[0]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine1.png");
+   m[1]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine2.png");
+   m[2]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine3.png");
+   m[3]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine4.png");
+   m[4]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine5.png");
+
+
+   QPixmap b("C:/Users/Ada/Documents/sys_zdarz/bufor.png");
+
+   process_layout= new QGridLayout(this);
+    int k=0;
+    int l=0;
+   for(int i=0;i<acctual_amount_of_machines;i++){
+       machine_pic[i]=new QLabel(this);
+       machine_pic[i]->setPixmap(m[i]);
+       for(int j=0;j<machine_table[i].getBuffer();j++)
+       {
+           machine_buf_pic[i][j]=new QLabel(this);
+           machine_buf_pic[i][j]->setPixmap(b);
+           process_layout->addWidget(machine_buf_pic[i][j],l,k);
+           k++;
+       }
+       process_layout->addWidget(machine_pic[i],l,k);
+       k++;
+   }
+   ui->process_widget->setLayout(process_layout);
+
 
 }
