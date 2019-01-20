@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QString>
+#include<iostream>
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -38,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
         mainLayout->addWidget(processes_description_label[i],i+2,2);
         mainLayout->addWidget(processes_description[i],i+2,3);
     }
-    ui->centralWidget->setLayout(mainLayout);
+    ui->mainWidget->setLayout(mainLayout);
     connect(nr_of_machines, SIGNAL (valueChanged(int)), this, SLOT (display_machines(int)));
     connect(nr_of_processes, SIGNAL (valueChanged(int)), this, SLOT (display_processes(int)));
 
@@ -52,7 +54,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::display_machines(int n)
 {
-    int nr=nr_of_machines->value();
+    acctual_amount_of_machines=nr_of_machines->value();
     for(int i=0;i<n; i++)  {
         machine_buffers_spinBox[i]->setVisible(true);
         machine_buffers_label[i]->setVisible(true);
@@ -62,11 +64,12 @@ void MainWindow::display_machines(int n)
         machine_buffers_label[i]->setVisible(false);
     }
 
+
 }
 
 void MainWindow::display_processes(int n)
 {
-    int nr=nr_of_processes->value();
+    acctual_amount_of_processes=nr_of_processes->value();
     for(int i=0;i<n; i++)  {
         processes_description[i]->setVisible(true);
         processes_description_label[i]->setVisible(true);
@@ -76,6 +79,11 @@ void MainWindow::display_processes(int n)
         processes_description_label[i]->setVisible(false);
     }
     connect(processes_description[0], SIGNAL (editingFinished()), this, SLOT (display_process0_input()));
+    connect(processes_description[1], SIGNAL (editingFinished()), this, SLOT (display_process1_input()));
+    connect(processes_description[2], SIGNAL (editingFinished()), this, SLOT (display_process2_input()));
+    connect(processes_description[3], SIGNAL (editingFinished()), this, SLOT (display_process3_input()));
+    connect(processes_description[4], SIGNAL (editingFinished()), this, SLOT (display_process4_input()));
+
 
 }
 
@@ -86,10 +94,104 @@ void MainWindow::display_process0_input(){
     a=order[i];
     time_at_machines_label[0][i]=new QLabel(this);
     time_at_machines[0][i]=new QLineEdit(this);
-    time_at_machines_label[0][i]->setText(a);
+    time_at_machines_label[0][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
 
     mainLayout->addWidget(time_at_machines_label[0][i],2,4+2*i);
     mainLayout->addWidget(time_at_machines[0][i],2,4+2*i+1);
 
     }
+}
+void MainWindow::display_process1_input(){
+    QString order = processes_description[1]->text();
+    for(int i=0;i<order.length();i++){
+    QString a ;
+    a=order[i];
+    time_at_machines_label[1][i]=new QLabel(this);
+    time_at_machines[1][i]=new QLineEdit(this);
+    time_at_machines_label[1][1]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+
+    mainLayout->addWidget(time_at_machines_label[1][i],3,4+2*i);
+    mainLayout->addWidget(time_at_machines[1][i],3,4+2*i+1);
+
+    }
+}
+void MainWindow::display_process2_input(){
+    QString order = processes_description[2]->text();
+    for(int i=0;i<order.length();i++){
+    QString a ;
+    a=order[i];
+    time_at_machines_label[2][i]=new QLabel(this);
+    time_at_machines[2][i]=new QLineEdit(this);
+    time_at_machines_label[2][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+
+    mainLayout->addWidget(time_at_machines_label[2][i],4,4+2*i);
+    mainLayout->addWidget(time_at_machines[2][i],4,4+2*i+1);
+
+    }
+}
+void MainWindow::display_process3_input(){
+    QString order = processes_description[3]->text();
+    for(int i=0;i<order.length();i++){
+    QString a ;
+    a=order[i];
+    time_at_machines_label[3][i]=new QLabel(this);
+    time_at_machines[3][i]=new QLineEdit(this);
+    time_at_machines_label[3][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+
+    mainLayout->addWidget(time_at_machines_label[3][i],5,4+2*i);
+    mainLayout->addWidget(time_at_machines[3][i],5,4+2*i+1);
+
+    }
+}
+void MainWindow::display_process4_input(){
+    QString order = processes_description[4]->text();
+    for(int i=0;i<order.length();i++){
+    QString a ;
+    a=order[i];
+    time_at_machines_label[4][i]=new QLabel(this);
+    time_at_machines[4][i]=new QLineEdit(this);
+    time_at_machines_label[4][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+
+    mainLayout->addWidget(time_at_machines_label[4][i],6,4+2*i);
+    mainLayout->addWidget(time_at_machines[4][i],6,4+2*i+1);
+
+
+    }
+}
+
+
+void Process::setProcess(int size)
+{
+    machine_order=new int[size];
+    times_at_machines= new int[size];
+
+}
+
+
+
+
+void MainWindow::on_set_initials_clicked()
+{
+    ui->tabWidget->setCurrentIndex(1);
+
+    machine_table=new Machine[acctual_amount_of_machines];
+    for(int i=0; i<acctual_amount_of_machines;i++){
+        machine_table[i].setBuffer(machine_buffers_spinBox[i]->value());
+        cout<<"Machines"<<endl;
+        cout<<machine_buffers_spinBox[i]->value()<<endl;
+    }
+    process_table=new Process[acctual_amount_of_processes];
+    for(int i=0; i<acctual_amount_of_processes;i++){
+        process_table[i].setProcess(processes_description[i]->text().length());
+        QString order = processes_description[i]->text();
+        cout<<"Proces "<<i<<endl;
+        for(int j=0;j<order.length();j++){
+        QString a ;
+        a=order[j];
+        process_table[i].machine_order[j]=a.toInt();
+        process_table[i].times_at_machines[j]=time_at_machines[i][j]->text().toInt();
+        cout<<process_table[i].machine_order[j]<<"  "<<process_table[i].times_at_machines[j]<<endl;
+        }
+    }
+
 }
