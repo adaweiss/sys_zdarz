@@ -3,7 +3,7 @@
 #include <QString>
 #include<iostream>
 #include <QMessageBox>
-#include <QPixMap>
+#include <QPixmap>
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -52,6 +52,67 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+int** MainWindow::build_incident_matrix()
+{
+    int all_processes_length=0;
+    for(int i=0;i<acctual_amount_of_processes;i++){
+        all_processes_length+=process_table[i].size;
+    }
+    int trans_no=3*all_processes_length+acctual_amount_of_processes; //no. of translations
+    int state_no = 2*acctual_amount_of_machines+3*all_processes_length+2;//no. of states
+    int** tab = new int* [state_no]; //nb of translations and states in one machine and one transport robot
+
+    for(int i =0;i<state_no;i++)
+        tab[i] = new int [trans_no];
+    for(int i =0;i<state_no;i++)
+        for(int j =0;j<trans_no;j++)
+            tab[i][j]=0;
+
+    int a=acctual_amount_of_machines*2-1;
+    int b=0;
+    for(int i=0;i<acctual_amount_of_processes;i++){
+        for(int j=0;j<process_table[i].size;j++){
+            int tmp_machine = process_table[i].machine_order[j];
+
+            tab[tmp_machine*2-1][b]=-1;
+            tab[a][b]=1;
+            tab[a][b+1]=-1;
+            tab[tmp_machine*2-2][b+1]=-1;
+            tab[a+1][b+1]=1;
+            tab[a+1][b+2]=-1;
+            tab[a+2][b+2]=1;
+            tab[tmp_machine*2-2][b+2]=1;
+            tab[a+2][b+3]=-1;
+            tab[tmp_machine*2-1][b+3]=1;
+            if(j==0){//poczatek procesu
+                tab[state_no-2][b]=-1;
+                tab[(process_table[i].machine_order[j+1])*2-1][b+3]=-1;
+                tab[process_table[i].machine_order[j+1]][b+3]=1;
+            }else if(j==process_table[i].size-1){//ostatnia czesc procesu
+                tab[(process_table[i].machine_order[j-1])*2-1][b]=1;
+                tab[process_table[i].machine_order[j-1]][b]=-1;
+                tab[state_no-1][b+3]=1;
+            }else{
+                tab[(process_table[i].machine_order[j-1])*2-1][b]=1;
+                tab[process_table[i].machine_order[j-1]][b]=-1;
+                tab[(process_table[i].machine_order[j+1])*2-1][b+3]=-1;
+                tab[process_table[i].machine_order[j+1]][b+3]=1;
+            }
+            a+=3; b+=3;
+        }
+        b+=1;
+    }
+
+    for(int i =0;i<state_no;i++){
+        for(int j =0;j<trans_no;j++)
+           cout<< tab[i][j]<< "\t";
+        cout<<endl;
+    }
+
+
+    return tab;
 }
 
 void MainWindow::display_machines(int n)
@@ -230,6 +291,19 @@ void MainWindow::on_set_initials_clicked()
     for(int i=0;i<acctual_amount_of_processes;i++){
         amount_of_details[i]=nr_of_details_in[i]->text().toInt();
     }
+
+    //Gosia
+    int all_processes_length_2=0;
+    for(int i=0;i<acctual_amount_of_processes;i++){
+        all_processes_length_2+=process_table[i].size;
+    }
+    int trans_no_2=3*all_processes_length_2+acctual_amount_of_processes; //no. of translations
+    int state_no_2 = 2*acctual_amount_of_machines+3*all_processes_length_2+2;//no. of states
+    int** tab_2 = new int* [state_no_2];
+    for(int i =0;i<state_no_2;i++)
+        tab_2[i] = new int [trans_no_2];
+    tab_2=build_incident_matrix();
+
 
    QPixmap m[5];
    m[0]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine1.png");

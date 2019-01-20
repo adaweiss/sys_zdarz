@@ -8,7 +8,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTimer>
-#include <Vector>
+#include <QVector>
 namespace Ui {
 class MainWindow;
 }
@@ -60,9 +60,12 @@ class MainWindow : public QMainWindow
     QLabel *machine_buf_pic[5][10];
 
 
+
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    int** build_incident_matrix();
 
 private:
     Ui::MainWindow *ui;
