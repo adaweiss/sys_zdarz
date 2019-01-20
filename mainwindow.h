@@ -24,7 +24,8 @@ class Process {
 public:
     int *machine_order;
     int *times_at_machines;
-    void setProcess(int size);
+    int size;
+    void setProcess(int len);
 };
 
 class MainWindow : public QMainWindow

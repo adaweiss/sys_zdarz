@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QString>
 #include<iostream>
+#include <QMessageBox>
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -160,10 +161,11 @@ void MainWindow::display_process4_input(){
 }
 
 
-void Process::setProcess(int size)
+void Process::setProcess(int len)
 {
-    machine_order=new int[size];
-    times_at_machines= new int[size];
+    machine_order=new int[len];
+    times_at_machines= new int[len];
+    size=len;
 
 }
 
@@ -172,7 +174,12 @@ void Process::setProcess(int size)
 
 void MainWindow::on_set_initials_clicked()
 {
-    ui->tabWidget->setCurrentIndex(1);
+
+    QMessageBox msgBox;
+    msgBox.setText("Error in process desctiption.");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+
 
     machine_table=new Machine[acctual_amount_of_machines];
     for(int i=0; i<acctual_amount_of_machines;i++){
@@ -188,10 +195,13 @@ void MainWindow::on_set_initials_clicked()
         for(int j=0;j<order.length();j++){
         QString a ;
         a=order[j];
+        if(a.toInt()>acctual_amount_of_machines) {msgBox.exec(); return;}
         process_table[i].machine_order[j]=a.toInt();
         process_table[i].times_at_machines[j]=time_at_machines[i][j]->text().toInt();
         cout<<process_table[i].machine_order[j]<<"  "<<process_table[i].times_at_machines[j]<<endl;
         }
     }
+
+    ui->tabWidget->setCurrentIndex(1);
 
 }
