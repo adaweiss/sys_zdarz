@@ -231,12 +231,7 @@ void MainWindow::on_set_initials_clicked()
         amount_of_details[i]=nr_of_details_in[i]->text().toInt();
     }
 
-   QPixmap m[5];
-   m[0]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine1.png");
-   m[1]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine2.png");
-   m[2]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine3.png");
-   m[3]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine4.png");
-   m[4]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine5.png");
+   QPixmap m=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine.png");
 
 
    QPixmap b("C:/Users/Ada/Documents/sys_zdarz/bufor.png");
@@ -246,18 +241,40 @@ void MainWindow::on_set_initials_clicked()
     int l=0;
    for(int i=0;i<acctual_amount_of_machines;i++){
        machine_pic[i]=new QLabel(this);
-       machine_pic[i]->setPixmap(m[i]);
+       machine_pic_label[i]=new QLabel(this);
+       machine_pic_label[i]->setText(" ");
+       machine_pic[i]->setPixmap(m);
        for(int j=0;j<machine_table[i].getBuffer();j++)
        {
            machine_buf_pic[i][j]=new QLabel(this);
            machine_buf_pic[i][j]->setPixmap(b);
+           machine_buf_pic_label[i][j]=new QLabel(this);
+           machine_buf_pic_label[i][j]->setText(" ");
            process_layout->addWidget(machine_buf_pic[i][j],l,k);
+           process_layout->addWidget(machine_buf_pic_label[i][j],l,k);
+
            k++;
        }
        process_layout->addWidget(machine_pic[i],l,k);
+       process_layout->addWidget(machine_pic_label[i],l,k);
        k++;
    }
    ui->process_widget->setLayout(process_layout);
 
 
+}
+
+void MainWindow::on_start_clicked()
+{
+    for(int i=0;i<acctual_amount_of_processes;i++){
+        Element a=Element(i,0);
+       for(int j=0;j<amount_of_details[i];j++) elements_list[i].push_back(a);
+    }
+// tu próbowałam jakieś initiale robić, ale to nie ma sensu
+    for(int i=0;i<acctual_amount_of_processes;i++){
+        for(int j=0;j<machine_table[process_table[i].machine_order[0]].getBuffer();j++){
+        if(machine_buf_pic_label[i][j]->text()==" ") machine_buf_pic_label[i][j]->setText(QString::fromLatin1("%1_%2:").arg(i).arg(j));
+        elements_list[i].pop_back();
+        }
+    }
 }

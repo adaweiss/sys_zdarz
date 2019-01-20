@@ -8,7 +8,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTimer>
-#include <Vector>
+#include <vector>
 namespace Ui {
 class MainWindow;
 }
@@ -33,8 +33,10 @@ public:
 
 
 class Element{
+public:
     int nr_procesu;
     int process_state; //na ktorej maszynie ma być teraz robiony
+    Element(int nr, int state){nr_procesu=nr; process_state=state;}
 };
 
 class MainWindow : public QMainWindow
@@ -58,6 +60,8 @@ class MainWindow : public QMainWindow
     Process *process_table;
     QLabel *machine_pic[5];
     QLabel *machine_buf_pic[5][10];
+    QLabel *machine_pic_label[5];
+    QLabel *machine_buf_pic_label[5][10];
 
 
 public:
@@ -71,6 +75,7 @@ private:
     int acctual_amount_of_machines;
     int acctual_amount_of_processes;
     int *amount_of_details;
+    std::vector<Element> elements_list[5];
 public slots:
     void display_machines(int n);
     void display_process0_input();
@@ -82,6 +87,7 @@ public slots:
 
 private slots:
     void on_set_initials_clicked();
+    void on_start_clicked();
 };
 
 #endif // MAINWINDOW_H
