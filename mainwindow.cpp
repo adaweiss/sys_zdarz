@@ -292,7 +292,7 @@ void MainWindow::on_set_initials_clicked()
         amount_of_details[i]=nr_of_details_in[i]->text().toInt();
     }
 
-<<<<<<< HEAD
+
     //Gosia
     int all_processes_length_2=0;
     for(int i=0;i<acctual_amount_of_processes;i++){
@@ -313,10 +313,6 @@ void MainWindow::on_set_initials_clicked()
    m[3]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine4.png");
    m[4]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine5.png");
     QPixmap m=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine.png");
-=======
-
->>>>>>> 89e58c49379ea18ddec9448daeac46b6e5879be0
-
 
    QPixmap b("C:/Users/Ada/Documents/sys_zdarz/bufor.png");
 

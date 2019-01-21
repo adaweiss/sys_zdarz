@@ -8,11 +8,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTimer>
-<<<<<<< HEAD
 #include <QVector>
-=======
-
->>>>>>> 89e58c49379ea18ddec9448daeac46b6e5879be0
 namespace Ui {
 class MainWindow;
 }
