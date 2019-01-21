@@ -1,5 +1,5 @@
 #include <iostream>
-#include "mainwindow.h"
+#include "inc/mainwindow.h"
 using namespace std;
 /*
 * k - number of machines

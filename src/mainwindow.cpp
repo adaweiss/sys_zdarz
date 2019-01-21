@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "inc/mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QString>
 #include<iostream>
@@ -307,9 +307,9 @@ void MainWindow::on_set_initials_clicked()
 
 
 
-    QPixmap m=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine.png");
+    QPixmap m=QPixmap("./machine.png");
 
-   QPixmap b("C:/Users/Ada/Documents/sys_zdarz/bufor.png");
+   QPixmap b("./bufor.png");
 
    process_layout= new QGridLayout(this);
     int k=0;
