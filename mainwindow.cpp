@@ -306,12 +306,7 @@ void MainWindow::on_set_initials_clicked()
     tab_2=build_incident_matrix();
 
 
-   QPixmap m[5];
-   m[0]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine1.png");
-   m[1]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine2.png");
-   m[2]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine3.png");
-   m[3]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine4.png");
-   m[4]=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine5.png");
+
     QPixmap m=QPixmap("C:/Users/Ada/Documents/sys_zdarz/machine.png");
 
    QPixmap b("C:/Users/Ada/Documents/sys_zdarz/bufor.png");
