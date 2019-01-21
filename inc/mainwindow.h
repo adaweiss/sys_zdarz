@@ -29,7 +29,7 @@ class Machine {
     QVector<Element> elements_in_buffer;
     QTimer *timer;
     Machine(){timer=new QTimer;}
-    void setBuffer(int i){buffer_capacity=i;}
+    void setBuffer(int i){buffer_capacity=i; currently_made=nullptr;}
     int getBuffer(){return buffer_capacity;}
     void setCurrentlyMade(Element e){currently_made=new Element(e.nr,e.nr_procesu,e.process_state);}
 
@@ -78,6 +78,7 @@ public:
 
     int** build_incident_matrix();
 
+    void machine_actions(int machine_no);
 private:
     Ui::MainWindow *ui;
     int am_of_machines=5;
