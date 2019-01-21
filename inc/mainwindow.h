@@ -13,13 +13,25 @@ namespace Ui {
 class MainWindow;
 }
 
+class Element{
+public:
+    int nr;
+    int nr_procesu;
+    int process_state; //na ktorej maszynie ma być teraz robiony
+    Element(int n,int nr_p, int state){nr=n; nr_procesu=nr_p; process_state=state;}
+    Element(){}
+};
+
 class Machine {
     public:
     int buffer_capacity;
+    Element *currently_made;
+    QVector<Element> elements_in_buffer;
     QTimer *timer;
     Machine(){timer=new QTimer;}
     void setBuffer(int i){buffer_capacity=i;}
     int getBuffer(){return buffer_capacity;}
+    void setCurrentlyMade(Element e){currently_made=new Element(e.nr,e.nr_procesu,e.process_state);}
 
 };
 
@@ -32,12 +44,7 @@ public:
 };
 
 
-class Element{
-public:
-    int nr_procesu;
-    int process_state; //na ktorej maszynie ma być teraz robiony
-    Element(int nr, int state){nr_procesu=nr; process_state=state;}
-};
+
 
 class MainWindow : public QMainWindow
 {
@@ -78,7 +85,7 @@ private:
     int acctual_amount_of_machines;
     int acctual_amount_of_processes;
     int *amount_of_details;
-    std::vector<Element> elements_list[5];
+    QVector<Element> elements_list[5];
 public slots:
     void display_machines(int n);
     void display_process0_input();

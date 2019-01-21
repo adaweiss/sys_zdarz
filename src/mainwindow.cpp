@@ -357,8 +357,7 @@ void MainWindow::on_set_initials_clicked()
 void MainWindow::on_start_clicked()
 {
     for(int i=0;i<acctual_amount_of_processes;i++){
-        Element a=Element(i,0);
-       for(int j=0;j<amount_of_details[i];j++) elements_list[i].push_back(a);
+       for(int j=0;j<amount_of_details[i];j++)        {Element a=Element(j,i,0); elements_list[i].push_back(a);}
     }
 // tu próbowałam jakieś initiale robić, ale to nie ma sensu
     for(int i=0;i<acctual_amount_of_processes;i++){
@@ -366,11 +365,13 @@ void MainWindow::on_start_clicked()
         cout<<"ij"<<process_table[i].machine_order[0]<<endl;
         if(machine_pic_label[process_table[i].machine_order[0]]->text()==" ") {
         machine_pic_label[process_table[i].machine_order[0]]->setText(QString::fromLatin1("        p%1_%2:").arg(i).arg(amount_of_details[i]-elements_list[i].size()+1));
+        machine_table[process_table[i].machine_order[0]].setCurrentlyMade(elements_list[i].last());
         elements_list[i].pop_back();
         machine_table[process_table[i].machine_order[0]].timer->start(process_table[i].times_at_machines[0]*1000);
         }
         if(machine_buf_pic_label[process_table[i].machine_order[0]][j]->text()==" ") {
         machine_buf_pic_label[process_table[i].machine_order[0]][j]->setText(QString::fromLatin1("  p%1_%2:").arg(i).arg(amount_of_details[i]-elements_list[i].size()+1));
+        machine_table[i].elements_in_buffer.push_back(elements_list[i].last());
         elements_list[i].pop_back();
         }
     }
