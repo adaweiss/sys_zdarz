@@ -433,6 +433,7 @@ void MainWindow::machine_actions(int machine_no){
             }
             }
         }
+        else {machine_table[machine_no].timer->start(1000); return;}
         if(!machine_table[next_machine].timer->isActive()) machine_actions(next_machine);
     }
 
