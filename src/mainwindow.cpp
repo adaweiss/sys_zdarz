@@ -74,7 +74,7 @@ int** MainWindow::build_incident_matrix()
     int b=0;
     for(int i=0;i<acctual_amount_of_processes;i++){
         for(int j=0;j<process_table[i].size;j++){
-            int tmp_machine = process_table[i].machine_order[j];
+            int tmp_machine = process_table[i].machine_order[j]+1;
 
             tab[tmp_machine*2-1][b]=-1;
             tab[a][b]=1;
@@ -303,16 +303,16 @@ void MainWindow::on_set_initials_clicked()
 
 
     //Gosia
-   // int all_processes_length_2=0;
-   // for(int i=0;i<acctual_amount_of_processes;i++){
-   //     all_processes_length_2+=process_table[i].size;
-   // }
-   // int trans_no_2=3*all_processes_length_2+acctual_amount_of_processes; //no. of translations
-   // int state_no_2 = 2*acctual_amount_of_machines+3*all_processes_length_2+2;//no. of states
-   // int** tab_2 = new int* [state_no_2];
-   // for(int i =0;i<state_no_2;i++)
-    //    tab_2[i] = new int [trans_no_2];
-    //tab_2=build_incident_matrix();
+    int all_processes_length_2=0;
+    for(int i=0;i<acctual_amount_of_processes;i++){
+       all_processes_length_2+=process_table[i].size;
+    }
+    int trans_no_2=3*all_processes_length_2+acctual_amount_of_processes; //no. of translations
+    int state_no_2 = 2*acctual_amount_of_machines+3*all_processes_length_2+2;//no. of states
+    int** tab_2 = new int* [state_no_2];
+    for(int i =0;i<state_no_2;i++)
+        tab_2[i] = new int [trans_no_2];
+    tab_2=build_incident_matrix();
 
 
 
@@ -345,6 +345,11 @@ void MainWindow::on_set_initials_clicked()
    }
    ui->process_widget->setLayout(process_layout);
    connect(machine_table[0].timer, SIGNAL (timeout()), this, SLOT(timer1_runout()));
+   connect(machine_table[1].timer, SIGNAL (timeout()), this, SLOT(timer2_runout()));
+   connect(machine_table[2].timer, SIGNAL (timeout()), this, SLOT(timer3_runout()));
+   connect(machine_table[3].timer, SIGNAL (timeout()), this, SLOT(timer4_runout()));
+   connect(machine_table[4].timer, SIGNAL (timeout()), this, SLOT(timer5_runout()));
+
 
 }
 
@@ -371,5 +376,25 @@ void MainWindow::on_start_clicked()
 }
 
 void MainWindow::timer1_runout(){
+    machine_pic_label[0]->setText(" ");
+}
+
+
+void MainWindow::timer2_runout(){
+    machine_pic_label[0]->setText(" ");
+}
+
+
+void MainWindow::timer3_runout(){
+    machine_pic_label[0]->setText(" ");
+}
+
+
+void MainWindow::timer4_runout(){
+    machine_pic_label[0]->setText(" ");
+}
+
+
+void MainWindow::timer5_runout(){
     machine_pic_label[0]->setText(" ");
 }

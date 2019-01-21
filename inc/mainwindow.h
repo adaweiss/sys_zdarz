@@ -88,6 +88,11 @@ public slots:
     void display_process3_input();
     void display_process4_input();
     void timer1_runout();
+    void timer2_runout();
+    void timer3_runout();
+    void timer4_runout();
+    void timer5_runout();
+
 
 private slots:
     void on_set_initials_clicked();
