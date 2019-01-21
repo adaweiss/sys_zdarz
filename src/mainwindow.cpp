@@ -307,9 +307,9 @@ void MainWindow::on_set_initials_clicked()
 
 
 
-    QPixmap m=QPixmap("./machine.png");
+    QPixmap m=QPixmap("C:/Users/Ada/Documents/sys_zdarz/images/machine.png");
 
-   QPixmap b("./bufor.png");
+   QPixmap b("C:/Users/Ada/Documents/sys_zdarz/images/bufor.png");
 
    process_layout= new QGridLayout(this);
     int k=0;
