@@ -69,6 +69,9 @@ class MainWindow : public QMainWindow
     QLabel *machine_buf_pic[5][10];
     QLabel *machine_pic_label[5];
     QLabel *machine_buf_pic_label[5][10];
+    QLabel *no[5];
+    QLabel *no_label[5];
+
 
 
 

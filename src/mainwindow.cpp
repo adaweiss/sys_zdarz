@@ -11,12 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->no1->setVisible(false);
-    ui->no2->setVisible(false);
-    ui->no3->setVisible(false);
-    ui->no4->setVisible(false);
-    ui->no5->setVisible(false);
-
     mainLayout=new QGridLayout(this);
     nr_of_machines=new QSpinBox(this);
     nr_of_machines_label= new QLabel;
@@ -355,12 +349,17 @@ void MainWindow::on_set_initials_clicked()
    if(acctual_amount_of_machines>2)    connect(machine_table[2].timer, SIGNAL (timeout()), this, SLOT(timer3_runout()));
    if(acctual_amount_of_machines>3)    connect(machine_table[3].timer, SIGNAL (timeout()), this, SLOT(timer4_runout()));
    if(acctual_amount_of_machines>4)    connect(machine_table[4].timer, SIGNAL (timeout()), this, SLOT(timer5_runout()));
-   if(acctual_amount_of_processes>0)  { ui->no1->setVisible(true); ui->no1->setText("0");}
-   if(acctual_amount_of_processes>1)  { ui->no2->setVisible(true);ui->no2->setText("0");}
-   if(acctual_amount_of_processes>2)  { ui->no3->setVisible(true);ui->no3->setText("0");}
-   if(acctual_amount_of_processes>3)  { ui->no4->setVisible(true);ui->no4->setText("0");}
-   if(acctual_amount_of_processes>4)  { ui->no5->setVisible(true);ui->no5->setText("0");}
+   QGridLayout *no_layout=new QGridLayout(this);
+   ui->no_widget->setLayout(no_layout);
+   for(int i=0;i<acctual_amount_of_processes;i++){
+       no[i]=new QLabel(this);
+       no_label[i]=new QLabel(this);
+       no[i]->setText("0");
+       no_label[i]->setText(QString::fromLatin1("No of elements produced in %1:").arg(i));
+       no_layout->addWidget(no_label[i],0,2*i);
+       no_layout->addWidget(no[i],0,2*i+1);
 
+   }
 
 }
 
@@ -398,24 +397,7 @@ void MainWindow::machine_actions(int machine_no){
     {
         machine_pic_label[machine_no]->setText(" ");
         machine_table[machine_no].currently_made=nullptr;
-        switch( proces_no )
-        {
-        case 0:
-            ui->no1->setText(QString::fromLatin1("%1").arg(ui->no1->text().toInt()+1));
-            break;
-        case 1:
-            ui->no2->setText(QString::fromLatin1("%1").arg(ui->no2->text().toInt()+1));
-            break;
-        case 2:
-            ui->no3->setText(QString::fromLatin1("%1").arg(ui->no3->text().toInt()+1));
-            break;
-        case 3:
-            ui->no4->setText(QString::fromLatin1("%1").arg(ui->no4->text().toInt()+1));
-            break;
-        case 4:
-            ui->no5->setText(QString::fromLatin1("%1").arg(ui->no5->text().toInt()+1));
-            break;
-        }
+        no[proces_no]->setText(QString::fromLatin1("%1").arg(no[proces_no]->text().toInt()+1));
         //wywal to całkiem
     }
     else {
