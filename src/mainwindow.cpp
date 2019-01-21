@@ -88,17 +88,17 @@ int** MainWindow::build_incident_matrix()
             tab[tmp_machine*2-1][b+3]=1;
             if(j==0){//poczatek procesu
                 tab[state_no-2][b]=-1;
-                tab[(process_table[i].machine_order[j+1])*2-1][b+3]=-1;
-                tab[process_table[i].machine_order[j+1]][b+3]=1;
+                tab[(process_table[i].machine_order[j+1]+1)*2-1][b+3]=-1;
+                tab[process_table[i].machine_order[j+1]+1][b+3]=1;
             }else if(j==process_table[i].size-1){//ostatnia czesc procesu
-                tab[(process_table[i].machine_order[j-1])*2-1][b]=1;
-                tab[process_table[i].machine_order[j-1]][b]=-1;
+                tab[(process_table[i].machine_order[j-1]+1)*2-1][b]=1;
+                tab[process_table[i].machine_order[j-1]+1][b]=-1;
                 tab[state_no-1][b+3]=1;
             }else{
-                tab[(process_table[i].machine_order[j-1])*2-1][b]=1;
-                tab[process_table[i].machine_order[j-1]][b]=-1;
-                tab[(process_table[i].machine_order[j+1])*2-1][b+3]=-1;
-                tab[process_table[i].machine_order[j+1]][b+3]=1;
+                tab[(process_table[i].machine_order[j-1]+1)*2-1][b]=1;
+                tab[process_table[i].machine_order[j-1]+1][b]=-1;
+                tab[(process_table[i].machine_order[j+1]+1)*2-1][b+3]=-1;
+                tab[process_table[i].machine_order[j+1]+1][b+3]=1;
             }
             a+=3; b+=3;
         }
@@ -305,13 +305,13 @@ void MainWindow::on_set_initials_clicked()
     //Gosia
     int all_processes_length_2=0;
     for(int i=0;i<acctual_amount_of_processes;i++){
-       all_processes_length_2+=process_table[i].size;
+        all_processes_length_2+=process_table[i].size;
     }
     int trans_no_2=3*all_processes_length_2+acctual_amount_of_processes; //no. of translations
     int state_no_2 = 2*acctual_amount_of_machines+3*all_processes_length_2+2;//no. of states
     int** tab_2 = new int* [state_no_2];
     for(int i =0;i<state_no_2;i++)
-        tab_2[i] = new int [trans_no_2];
+       tab_2[i] = new int [trans_no_2];
     tab_2=build_incident_matrix();
 
 
@@ -344,11 +344,12 @@ void MainWindow::on_set_initials_clicked()
        k++;
    }
    ui->process_widget->setLayout(process_layout);
-   connect(machine_table[0].timer, SIGNAL (timeout()), this, SLOT(timer1_runout()));
-   connect(machine_table[1].timer, SIGNAL (timeout()), this, SLOT(timer2_runout()));
-   connect(machine_table[2].timer, SIGNAL (timeout()), this, SLOT(timer3_runout()));
-   connect(machine_table[3].timer, SIGNAL (timeout()), this, SLOT(timer4_runout()));
-   connect(machine_table[4].timer, SIGNAL (timeout()), this, SLOT(timer5_runout()));
+   if(acctual_amount_of_machines>0)    connect(machine_table[0].timer, SIGNAL (timeout()), this, SLOT(timer1_runout()));
+   if(acctual_amount_of_machines>1)    connect(machine_table[1].timer, SIGNAL (timeout()), this, SLOT(timer2_runout()));
+   if(acctual_amount_of_machines>2)    connect(machine_table[2].timer, SIGNAL (timeout()), this, SLOT(timer3_runout()));
+   if(acctual_amount_of_machines>3)    connect(machine_table[3].timer, SIGNAL (timeout()), this, SLOT(timer4_runout()));
+   if(acctual_amount_of_machines>4)    connect(machine_table[4].timer, SIGNAL (timeout()), this, SLOT(timer5_runout()));
+
 
 
 }
@@ -379,22 +380,19 @@ void MainWindow::timer1_runout(){
     machine_pic_label[0]->setText(" ");
 }
 
+void MainWindow::timer2_runout()
+{
 
-void MainWindow::timer2_runout(){
-    machine_pic_label[0]->setText(" ");
 }
+void MainWindow::timer3_runout()
+{
 
-
-void MainWindow::timer3_runout(){
-    machine_pic_label[0]->setText(" ");
 }
+void MainWindow::timer4_runout()
+{
 
-
-void MainWindow::timer4_runout(){
-    machine_pic_label[0]->setText(" ");
 }
+void MainWindow::timer5_runout()
+{
 
-
-void MainWindow::timer5_runout(){
-    machine_pic_label[0]->setText(" ");
 }
