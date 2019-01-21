@@ -362,16 +362,18 @@ void MainWindow::on_start_clicked()
 // tu próbowałam jakieś initiale robić, ale to nie ma sensu
     for(int i=0;i<acctual_amount_of_processes;i++){
         int j=machine_table[process_table[i].machine_order[0]].getBuffer()-1;
-        cout<<"ij"<<process_table[i].machine_order[0]<<endl;
+        cout<<"proc "<<i;
         if(machine_pic_label[process_table[i].machine_order[0]]->text()==" ") {
-        machine_pic_label[process_table[i].machine_order[0]]->setText(QString::fromLatin1("        p%1_%2:").arg(i).arg(amount_of_details[i]-elements_list[i].size()+1));
+            cout<<"proc "<<i;
         machine_table[process_table[i].machine_order[0]].setCurrentlyMade(elements_list[i].last());
+        machine_pic_label[process_table[i].machine_order[0]]->setText(QString::fromLatin1("        p%1_%2:").arg(machine_table[process_table[i].machine_order[0]].currently_made->nr_procesu).arg(machine_table[process_table[i].machine_order[0]].currently_made->nr));
         elements_list[i].pop_back();
         machine_table[process_table[i].machine_order[0]].timer->start(process_table[i].times_at_machines[0]*1000);
         }
         if(machine_buf_pic_label[process_table[i].machine_order[0]][j]->text()==" ") {
-        machine_buf_pic_label[process_table[i].machine_order[0]][j]->setText(QString::fromLatin1("  p%1_%2:").arg(i).arg(amount_of_details[i]-elements_list[i].size()+1));
-        machine_table[i].elements_in_buffer.push_back(elements_list[i].last());
+            cout<<"proc "<<i;
+        machine_table[process_table[i].machine_order[0]].elements_in_buffer.push_back(elements_list[i].last());
+        machine_buf_pic_label[process_table[i].machine_order[0]][j]->setText(QString::fromLatin1("  p%1_%2:").arg(machine_table[process_table[i].machine_order[0]].elements_in_buffer.last().nr_procesu).arg(machine_table[process_table[i].machine_order[0]].elements_in_buffer.last().nr));
         elements_list[i].pop_back();
         }
     }

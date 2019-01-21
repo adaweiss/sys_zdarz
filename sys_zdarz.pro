@@ -27,7 +27,6 @@ CONFIG += c++11
 SOURCES += \
         src\main.cpp \
         src\mainwindow.cpp \
-    src\functions.cpp
 
 HEADERS += \
         inc\mainwindow.h
