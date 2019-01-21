@@ -376,14 +376,14 @@ void MainWindow::on_start_clicked()
         if(machine_pic_label[process_table[i].machine_order[0]]->text()==" ") {
             cout<<"proc "<<i;
         machine_table[process_table[i].machine_order[0]].setCurrentlyMade(elements_list[i].last());
-        machine_pic_label[process_table[i].machine_order[0]]->setText(QString::fromLatin1("        p%1_%2:").arg(machine_table[process_table[i].machine_order[0]].currently_made->nr_procesu).arg(machine_table[process_table[i].machine_order[0]].currently_made->nr));
+        machine_pic_label[process_table[i].machine_order[0]]->setText(QString::fromLatin1("        p%1_%2").arg(machine_table[process_table[i].machine_order[0]].currently_made->nr_procesu).arg(machine_table[process_table[i].machine_order[0]].currently_made->nr));
         elements_list[i].pop_back();
         machine_table[process_table[i].machine_order[0]].timer->start(process_table[i].times_at_machines[0]*1000);
         }
         if(machine_buf_pic_label[process_table[i].machine_order[0]][j]->text()==" ") {
             cout<<"proc "<<i;
         machine_table[process_table[i].machine_order[0]].elements_in_buffer.push_back(elements_list[i].last());
-        machine_buf_pic_label[process_table[i].machine_order[0]][j]->setText(QString::fromLatin1("  p%1_%2:").arg(machine_table[process_table[i].machine_order[0]].elements_in_buffer.last().nr_procesu).arg(machine_table[process_table[i].machine_order[0]].elements_in_buffer.last().nr));
+        machine_buf_pic_label[process_table[i].machine_order[0]][j]->setText(QString::fromLatin1("  p%1_%2").arg(machine_table[process_table[i].machine_order[0]].elements_in_buffer.last().nr_procesu).arg(machine_table[process_table[i].machine_order[0]].elements_in_buffer.last().nr));
         elements_list[i].pop_back();
         }
     }
@@ -408,7 +408,7 @@ void MainWindow::machine_actions(int machine_no){
             int k=1;
             for(int i=0;i<machine_table[next_machine].buffer_capacity&&k==1;i++){
             if(machine_buf_pic_label[next_machine][i]->text()==" ") {
-                machine_buf_pic_label[next_machine][i]->setText(QString::fromLatin1("  p%1_%2:").arg(proces_no).arg(e.nr));
+                machine_buf_pic_label[next_machine][i]->setText(QString::fromLatin1("  p%1_%2").arg(proces_no).arg(e.nr));
                 machine_pic_label[machine_no]->setText(" ");
                 machine_table[machine_no].currently_made=nullptr;
                 k=0;
@@ -429,7 +429,7 @@ void MainWindow::machine_actions(int machine_no){
                 elements_list[j].pop_back();
                 for(int i=0;i<machine_table[machine_no].buffer_capacity&&k==1;i++){
                 if(machine_buf_pic_label[machine_no][i]->text()==" ") {
-                    machine_buf_pic_label[machine_no][i]->setText(QString::fromLatin1("  p%1_%2:").arg(tmp.nr_procesu).arg(tmp.nr));
+                    machine_buf_pic_label[machine_no][i]->setText(QString::fromLatin1("  p%1_%2").arg(tmp.nr_procesu).arg(tmp.nr));
                     machine_pic_label[machine_no]->setText(" ");
                     machine_table[machine_no].currently_made=nullptr;
                     k=0;
@@ -442,12 +442,13 @@ void MainWindow::machine_actions(int machine_no){
     }
 
     if(machine_table[machine_no].elements_in_buffer.size()>0) {
-       Element a=machine_table[machine_no].elements_in_buffer.last();
+        int index=prioritize(machine_table[machine_no].elements_in_buffer);
+       Element a=machine_table[machine_no].elements_in_buffer.at(index);
        machine_table[machine_no].setCurrentlyMade(a);
-       machine_table[machine_no].elements_in_buffer.pop_back();
-       machine_pic_label[machine_no]->setText(QString::fromLatin1("  p%1_%2:").arg(a.nr_procesu).arg(a.nr));
+       machine_table[machine_no].elements_in_buffer.remove(index);
+       machine_pic_label[machine_no]->setText(QString::fromLatin1("        p%1_%2").arg(a.nr_procesu).arg(a.nr));
        for(int i=0;i<machine_table[machine_no].buffer_capacity;i++){
-       if(machine_buf_pic_label[machine_no][i]->text()==QString::fromLatin1("  p%1_%2:").arg(a.nr_procesu).arg(a.nr)) {
+       if(machine_buf_pic_label[machine_no][i]->text()==QString::fromLatin1("  p%1_%2").arg(a.nr_procesu).arg(a.nr)) {
            machine_buf_pic_label[machine_no][i]->setText(" ");
         }
        }
@@ -478,4 +479,20 @@ void MainWindow::timer5_runout()
 {
     machine_actions(4);
 
+}
+
+int MainWindow::prioritize(QVector<Element> elem_v){
+    int ind=0;
+    if(elem_v.size()==1) return 0;
+    else{
+        int t=100000;
+        for(int i=0;i<elem_v.size();i++){
+            int state=elem_v[i].process_state;
+            int pr_no=elem_v[i].nr_procesu;
+            int tmp_t=0;
+            for(int j=state;j<process_table[pr_no].size;j++) tmp_t+=process_table[pr_no].times_at_machines[j];
+            if(tmp_t<t) ind=i;
+        }
+    }
+    return ind;
 }
