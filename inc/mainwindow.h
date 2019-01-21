@@ -14,9 +14,9 @@ class MainWindow;
 }
 
 class Machine {
+    public:
     int buffer_capacity;
     QTimer *timer;
-    public:
     Machine(){timer=new QTimer;}
     void setBuffer(int i){buffer_capacity=i;}
     int getBuffer(){return buffer_capacity;}
@@ -87,6 +87,7 @@ public slots:
     void display_process2_input();
     void display_process3_input();
     void display_process4_input();
+    void timer1_runout();
 
 private slots:
     void on_set_initials_clicked();

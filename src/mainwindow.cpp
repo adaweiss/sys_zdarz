@@ -159,6 +159,8 @@ void MainWindow::display_process0_input(){
     time_at_machines_label[0][i]=new QLabel(this);
     time_at_machines[0][i]=new QLineEdit(this);
     time_at_machines_label[0][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+    time_at_machines[0][i]->setText("1");
+
     mainLayout->addWidget(time_at_machines_label[0][i],2,4+2*i);
     mainLayout->addWidget(time_at_machines[0][i],2,4+2*i+1);
     }
@@ -177,6 +179,8 @@ void MainWindow::display_process1_input(){
     time_at_machines_label[1][i]=new QLabel(this);
     time_at_machines[1][i]=new QLineEdit(this);
     time_at_machines_label[1][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+    time_at_machines[1][i]->setText("1");
+
     mainLayout->addWidget(time_at_machines_label[1][i],3,4+2*i);
     mainLayout->addWidget(time_at_machines[1][i],3,4+2*i+1);
     }
@@ -195,6 +199,8 @@ void MainWindow::display_process2_input(){
     time_at_machines_label[2][i]=new QLabel(this);
     time_at_machines[2][i]=new QLineEdit(this);
     time_at_machines_label[2][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+    time_at_machines[2][i]->setText("1");
+
 
     mainLayout->addWidget(time_at_machines_label[2][i],4,4+2*i);
     mainLayout->addWidget(time_at_machines[2][i],4,4+2*i+1);
@@ -214,6 +220,8 @@ void MainWindow::display_process3_input(){
     time_at_machines_label[3][i]=new QLabel(this);
     time_at_machines[3][i]=new QLineEdit(this);
     time_at_machines_label[3][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+    time_at_machines[3][i]->setText("1");
+
 
     mainLayout->addWidget(time_at_machines_label[3][i],5,4+2*i);
     mainLayout->addWidget(time_at_machines[3][i],5,4+2*i+1);
@@ -233,6 +241,7 @@ void MainWindow::display_process4_input(){
     time_at_machines_label[4][i]=new QLabel(this);
     time_at_machines[4][i]=new QLineEdit(this);
     time_at_machines_label[4][i]->setText(QString::fromLatin1("Time on machine %1:").arg(a));
+    time_at_machines[4][i]->setText("1");
 
     mainLayout->addWidget(time_at_machines_label[4][i],6,4+2*i);
     mainLayout->addWidget(time_at_machines[4][i],6,4+2*i+1);
@@ -269,7 +278,7 @@ void MainWindow::on_set_initials_clicked()
     for(int i=0; i<acctual_amount_of_machines;i++){
         machine_table[i].setBuffer(machine_buffers_spinBox[i]->value());
         cout<<"Machines"<<endl;
-        cout<<machine_buffers_spinBox[i]->value()<<endl;
+        cout<<machine_table[i].getBuffer();
     }
     process_table=new Process[acctual_amount_of_processes];
     for(int i=0; i<acctual_amount_of_processes;i++){
@@ -280,7 +289,7 @@ void MainWindow::on_set_initials_clicked()
         QString a ;
         a=order[j];
         if(a.toInt()>acctual_amount_of_machines) {msgBox.exec(); return;}
-        process_table[i].machine_order[j]=a.toInt();
+        process_table[i].machine_order[j]=a.toInt()-1;
         process_table[i].times_at_machines[j]=time_at_machines[i][j]->text().toInt();
         cout<<process_table[i].machine_order[j]<<"  "<<process_table[i].times_at_machines[j]<<endl;
         }
@@ -294,16 +303,16 @@ void MainWindow::on_set_initials_clicked()
 
 
     //Gosia
-    int all_processes_length_2=0;
-    for(int i=0;i<acctual_amount_of_processes;i++){
-        all_processes_length_2+=process_table[i].size;
-    }
-    int trans_no_2=3*all_processes_length_2+acctual_amount_of_processes; //no. of translations
-    int state_no_2 = 2*acctual_amount_of_machines+3*all_processes_length_2+2;//no. of states
-    int** tab_2 = new int* [state_no_2];
-    for(int i =0;i<state_no_2;i++)
-        tab_2[i] = new int [trans_no_2];
-    tab_2=build_incident_matrix();
+   // int all_processes_length_2=0;
+   // for(int i=0;i<acctual_amount_of_processes;i++){
+   //     all_processes_length_2+=process_table[i].size;
+   // }
+   // int trans_no_2=3*all_processes_length_2+acctual_amount_of_processes; //no. of translations
+   // int state_no_2 = 2*acctual_amount_of_machines+3*all_processes_length_2+2;//no. of states
+   // int** tab_2 = new int* [state_no_2];
+   // for(int i =0;i<state_no_2;i++)
+    //    tab_2[i] = new int [trans_no_2];
+    //tab_2=build_incident_matrix();
 
 
 
@@ -335,7 +344,7 @@ void MainWindow::on_set_initials_clicked()
        k++;
    }
    ui->process_widget->setLayout(process_layout);
-
+   connect(machine_table[0].timer, SIGNAL (timeout()), this, SLOT(timer1_runout()));
 
 }
 
@@ -347,9 +356,20 @@ void MainWindow::on_start_clicked()
     }
 // tu próbowałam jakieś initiale robić, ale to nie ma sensu
     for(int i=0;i<acctual_amount_of_processes;i++){
-        for(int j=0;j<machine_table[process_table[i].machine_order[0]].getBuffer();j++){
-        if(machine_buf_pic_label[i][j]->text()==" ") machine_buf_pic_label[i][j]->setText(QString::fromLatin1("%1_%2:").arg(i).arg(j));
+        int j=machine_table[process_table[i].machine_order[0]].getBuffer()-1;
+        cout<<"ij"<<process_table[i].machine_order[0]<<endl;
+        if(machine_pic_label[process_table[i].machine_order[0]]->text()==" ") {
+        machine_pic_label[process_table[i].machine_order[0]]->setText(QString::fromLatin1("        p%1_%2:").arg(i).arg(amount_of_details[i]-elements_list[i].size()+1));
+        elements_list[i].pop_back();
+        machine_table[process_table[i].machine_order[0]].timer->start(process_table[i].times_at_machines[0]*1000);
+        }
+        if(machine_buf_pic_label[process_table[i].machine_order[0]][j]->text()==" ") {
+        machine_buf_pic_label[process_table[i].machine_order[0]][j]->setText(QString::fromLatin1("  p%1_%2:").arg(i).arg(amount_of_details[i]-elements_list[i].size()+1));
         elements_list[i].pop_back();
         }
     }
+}
+
+void MainWindow::timer1_runout(){
+    machine_pic_label[0]->setText(" ");
 }
