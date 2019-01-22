@@ -496,3 +496,45 @@ int MainWindow::prioritize(QVector<Element> elem_v){
     }
     return ind;
 }
+
+bool MainWindow::is_Safe(){
+    QVector<Element> all_processes;
+    for(int i=0;i<acctual_amount_of_machines;i++) {
+        for(int j=0;j<machine_table[i].elements_in_buffer.size();j++) {
+            all_processes.push_back(machine_table[i].elements_in_buffer.at(1));
+        }
+        all_processes.push_back(Element(machine_table[i].currently_made->nr, machine_table[i].currently_made->nr_procesu, machine_table[i].currently_made->process_state));
+    }
+    int size=all_processes.size();
+    bool *koniec=new bool[size];
+    for(int i=0;i<size;i++) {
+        if(machine_table[i].currently_made!=nullptr) koniec[i]=false;
+        else koniec[i]=true;
+    }
+    return 0;
+
+ /*   bool *koniec=new bool[acctual_amount_of_machines];
+    int *przydzial=new int[acctual_amount_of_machines];
+    for(int i=0;i<acctual_amount_of_machines;i++) {
+        if(machine_table[i].currently_made!=nullptr) koniec[i]=false;
+        else koniec[i]=true;
+    }
+    int ***zadane=new int**[acctual_amount_of_processes]; //first index sais which process do we have
+    for(int i=0;i<acctual_amount_of_machines;i++) {
+        zadane[i]=new int*[acctual_amount_of_machines];
+        for(int j=0;j<acctual_amount_of_machines;j++)   {
+            zadane[i][j]=new int[acctual_amount_of_machines];
+            for(int k=0;k<acctual_amount_of_machines;k++) zadane[i][j][k]=0;
+        }
+    }
+    for(int i=0;i<acctual_amount_of_machines;i++){
+        for(int j=0;j<process_table[i].size-1;j++){
+            zadane[i][process_table[i].machine_order[j]][process_table[i].machine_order[j+1]];
+        }
+    }
+    int *robocze=new int[acctual_amount_of_machines];
+
+    for(int i=0;i<acctual_amount_of_machines;i++) robocze[i]=machine_table[i].getBuffer();
+  */
+
+}

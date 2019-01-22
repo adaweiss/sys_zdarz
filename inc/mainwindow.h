@@ -83,6 +83,7 @@ public:
 
     void machine_actions(int machine_no);
     int prioritize(QVector<Element> elem_v);
+    bool is_Safe();
 private:
     Ui::MainWindow *ui;
     int am_of_machines=5;
