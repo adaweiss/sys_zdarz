@@ -166,7 +166,7 @@ void MainWindow::display_process0_input(){
     }
     nr_of_details_in_label[0]=new QLabel(this);
     nr_of_details_in[0]=new QLineEdit(this);
-    nr_of_details_in_label[0]->setText(QString::fromLatin1("Nr of elem. to be made in 1"));
+    nr_of_details_in_label[0]->setText(QString::fromLatin1("No of details in process 1"));
     mainLayout->addWidget(nr_of_details_in_label[0],8,4);
     mainLayout->addWidget(nr_of_details_in[0],8,5);
 
@@ -186,7 +186,7 @@ void MainWindow::display_process1_input(){
     }
     nr_of_details_in_label[1]=new QLabel(this);
     nr_of_details_in[1]=new QLineEdit(this);
-    nr_of_details_in_label[1]->setText(QString::fromLatin1("Nr of elem. to be made in 2"));
+    nr_of_details_in_label[1]->setText(QString::fromLatin1("No of details in process 2"));
     mainLayout->addWidget(nr_of_details_in_label[1],9,4);
     mainLayout->addWidget(nr_of_details_in[1],9,5);
 
@@ -208,7 +208,7 @@ void MainWindow::display_process2_input(){
     }
     nr_of_details_in_label[2]=new QLabel(this);
     nr_of_details_in[2]=new QLineEdit(this);
-    nr_of_details_in_label[2]->setText(QString::fromLatin1("Nr of elem. to be made in 3"));
+    nr_of_details_in_label[2]->setText(QString::fromLatin1("No of details in process 3"));
     mainLayout->addWidget(nr_of_details_in_label[2],10,4);
     mainLayout->addWidget(nr_of_details_in[2],10,5);
 }
@@ -229,7 +229,7 @@ void MainWindow::display_process3_input(){
     }
     nr_of_details_in_label[3]=new QLabel(this);
     nr_of_details_in[3]=new QLineEdit(this);
-    nr_of_details_in_label[3]->setText(QString::fromLatin1("Nr of elem. to be made in 4"));
+    nr_of_details_in_label[3]->setText(QString::fromLatin1("No of details in process 4"));
     mainLayout->addWidget(nr_of_details_in_label[3],11,4);
     mainLayout->addWidget(nr_of_details_in[3],11,5);
 }
@@ -248,7 +248,7 @@ void MainWindow::display_process4_input(){
     }
     nr_of_details_in_label[4]=new QLabel(this);
     nr_of_details_in[4]=new QLineEdit(this);
-    nr_of_details_in_label[4]->setText(QString::fromLatin1("Nr of elem. to be made in 5"));
+    nr_of_details_in_label[4]->setText(QString::fromLatin1("No of details in process 5"));
     mainLayout->addWidget(nr_of_details_in_label[4],12,4);
     mainLayout->addWidget(nr_of_details_in[4],12,5);
 }
@@ -398,39 +398,59 @@ void MainWindow::machine_actions(int machine_no){
         machine_pic_label[machine_no]->setText(" ");
         machine_table[machine_no].currently_made=nullptr;
         no[proces_no]->setText(QString::fromLatin1("%1").arg(no[proces_no]->text().toInt()+1));
+        bool flag=true;
+        for (int i=0;i<acctual_amount_of_processes;i++) {
+            if(no[i]->text().toInt()!=amount_of_details[i]) flag=false;
+            cout<<"Jest: "<<no[i]->text().toInt()<<" powinno:"<<amount_of_details[i]<<endl;
+        }
+        if(flag){
+            QMessageBox msgBox;
+            msgBox.setText("Production completed.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            msgBox.exec();
+            ui->statusBar->showMessage("Finished");
+        }
         //just throw it away
     }
     else {
         Element e=Element(machine_table[machine_no].currently_made->nr,machine_table[machine_no].currently_made->nr_procesu,machine_table[machine_no].currently_made->process_state+1);
         int next_machine=process_table[e.nr_procesu].machine_order[e.process_state];
-        if(machine_table[next_machine].elements_in_buffer.size()<machine_table[next_machine].buffer_capacity){
+        if(machine_table[next_machine].elements_in_buffer.size()<machine_table[next_machine].buffer_capacity){// if there is a place to put it
             machine_table[next_machine].elements_in_buffer.push_back(e);
-            if(is_Safe()){
+            machine_table[machine_no].currently_made=nullptr;
+            if(is_Safe()){ //if new state is safe
                 int k=1;
                 for(int i=0;i<machine_table[next_machine].buffer_capacity&&k==1;i++){
                     if(machine_buf_pic_label[next_machine][i]->text()==" ") {
                         machine_buf_pic_label[next_machine][i]->setText(QString::fromLatin1("  p%1_%2").arg(proces_no).arg(e.nr));
                         machine_pic_label[machine_no]->setText(" ");
-                        machine_table[machine_no].currently_made=nullptr;
+                        //machine_table[machine_no].currently_made=nullptr;
                         k=0;
                     }
                 }
+                ui->statusBar->showMessage("Busy");
                 cout<<"Bezpieczny"<<endl;
+
             }
             else {
-                cout<<"NIEezpieczny"<<endl;
+                ui->statusBar->showMessage("Waiting");
                 machine_table[next_machine].elements_in_buffer.pop_back();
-                machine_table[machine_no].timer->start(1000);
+                machine_table[machine_no].setCurrentlyMade(e);
+                machine_table[machine_no].timer->start(500);
+
                 //return;
 
             }
         }
-        else {machine_table[machine_no].timer->start(1000); return;}
+        else {machine_table[machine_no].timer->start(500);}
         if(!machine_table[next_machine].timer->isActive()) machine_actions(next_machine);
+
     }
 
     }
     int k=1;
+    if(machine_table[machine_no].currently_made==nullptr){
     for(int j=0;j<acctual_amount_of_processes&&k==1;j++){
         if(process_table[j].machine_order[0]==machine_no){
             if(machine_table[machine_no].elements_in_buffer.size()==0&&elements_list[j].size()>0){
@@ -464,8 +484,9 @@ void MainWindow::machine_actions(int machine_no){
        }
        machine_table[machine_no].timer->start(process_table[a.nr_procesu].times_at_machines[a.process_state]*1000);
     }
-
+    }
     for(int i=0;i<acctual_amount_of_processes;i++){
+        //if(!machine_table[i].timer->isActive()) machine_actions(i);
         if(!machine_table[process_table[i].machine_order[0]].timer->isActive()&& machine_table[process_table[i].machine_order[0]].getBuffer()==0) machine_actions(process_table[i].machine_order[0]);
     }
 
@@ -530,6 +551,7 @@ bool MainWindow::is_Safe(){
         robocze[i]=machine_table[i].getBuffer()+1-k;
     }
     int size=all_processes.size();
+    if(size>0){
     int **przydzial= new int*[size];
     int **zadane= new int*[size];
     for(int i=0;i<size;i++) {
@@ -545,8 +567,8 @@ bool MainWindow::is_Safe(){
             zadane[i][process_table[all_processes.at(i).nr_procesu].machine_order[j]]=1;
         }
     }
-    cout<<"zadane"<<endl;
-    for(int i=0;i<size;i++) {
+   /* cout<<"control"<<endl;
+   for(int i=0;i<size;i++) {
         for(int j=0;j<acctual_amount_of_machines;j++) cout<<zadane[i][j]<<" ";
     cout<<endl;
     }
@@ -557,20 +579,20 @@ bool MainWindow::is_Safe(){
     }
     cout<<"robocze"<<endl;
     for(int i=0;i<acctual_amount_of_machines;i++) cout<<robocze[i]<<endl;
-
+*/
     int i=0;
     int changed=0;
-    cout<<"size: "<<size<<endl;
+   // cout<<"size: "<<size<<endl;
     for(;;){
-        cout<<"i"<<i<<endl;
+        //cout<<"i"<<i<<endl;
         if(koniec[i]==false){
             bool flag=false;
-            cout<<"robocze"<<endl;
+           /* cout<<"robocze"<<endl;
             for(int k=0;k<acctual_amount_of_machines;k++) cout<<robocze[k]<<" ";
             cout<<endl;
             cout<<"zadane"<<endl;
             for(int k=0;k<acctual_amount_of_machines;k++) cout<<zadane[i][k]<<" ";
-            cout<<endl;
+            cout<<endl;*/
             for(int j=0;j<acctual_amount_of_machines;j++) {
                 if(zadane[i][j]<=robocze[j])  flag=true;
                 else {flag=false; break;}
@@ -593,6 +615,10 @@ bool MainWindow::is_Safe(){
         i=i+1;
         i=i%size;
 
+    }
+    }
+    else {
+        return true;
     }
 
 
