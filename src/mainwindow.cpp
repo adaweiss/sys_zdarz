@@ -105,11 +105,11 @@ int** MainWindow::build_incident_matrix()
         b+=1;
     }
 
-    for(int i =0;i<state_no;i++){
+   /* for(int i =0;i<state_no;i++){
         for(int j =0;j<trans_no;j++)
-           cout<< tab[i][j]<< "\t";
+          cout<< tab[i][j]<< "\t";
         cout<<endl;
-    }
+    }*/
 
 
     return tab;
@@ -270,28 +270,28 @@ void MainWindow::on_set_initials_clicked()
 
     QMessageBox msgBox;
     msgBox.setText("Error in process desctiption.");
-    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Save);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
 
 
     machine_table=new Machine[acctual_amount_of_machines];
     for(int i=0; i<acctual_amount_of_machines;i++){
         machine_table[i].setBuffer(machine_buffers_spinBox[i]->value());
-        cout<<"Machines"<<endl;
-        cout<<machine_table[i].getBuffer();
+      //  cout<<"Machines"<<endl;
+       // cout<<machine_table[i].getBuffer();
     }
     process_table=new Process[acctual_amount_of_processes];
     for(int i=0; i<acctual_amount_of_processes;i++){
         process_table[i].setProcess(processes_description[i]->text().length());
         QString order = processes_description[i]->text();
-        cout<<"Proces "<<i<<endl;
+      //  cout<<"Proces "<<i<<endl;
         for(int j=0;j<order.length();j++){
         QString a ;
         a=order[j];
         if(a.toInt()>acctual_amount_of_machines) {msgBox.exec(); return;}
         process_table[i].machine_order[j]=a.toInt()-1;
         process_table[i].times_at_machines[j]=time_at_machines[i][j]->text().toInt();
-        cout<<process_table[i].machine_order[j]<<"  "<<process_table[i].times_at_machines[j]<<endl;
+       // cout<<process_table[i].machine_order[j]<<"  "<<process_table[i].times_at_machines[j]<<endl;
         }
     }
 
@@ -369,10 +369,10 @@ void MainWindow::on_start_clicked()
        for(int j=0;j<amount_of_details[i];j++)        {Element a=Element(j,i,0); elements_list[i].push_back(a);}
     }
 
-// tu próbowałam jakieś initiale robić, ale to nie ma sensu
+// initiale
     for(int i=0;i<acctual_amount_of_processes;i++){
         int j=machine_table[process_table[i].machine_order[0]].getBuffer()-1;
-        cout<<"proc "<<i;
+       // cout<<"proc "<<i;
         if(machine_pic_label[process_table[i].machine_order[0]]->text()==" ") {
             cout<<"proc "<<i;
         machine_table[process_table[i].machine_order[0]].setCurrentlyMade(elements_list[i].last());
@@ -405,14 +405,23 @@ void MainWindow::machine_actions(int machine_no){
         int next_machine=process_table[e.nr_procesu].machine_order[e.process_state];
         if(machine_table[next_machine].elements_in_buffer.size()<machine_table[next_machine].buffer_capacity){
             machine_table[next_machine].elements_in_buffer.push_back(e);
-            int k=1;
-            for(int i=0;i<machine_table[next_machine].buffer_capacity&&k==1;i++){
-            if(machine_buf_pic_label[next_machine][i]->text()==" ") {
-                machine_buf_pic_label[next_machine][i]->setText(QString::fromLatin1("  p%1_%2").arg(proces_no).arg(e.nr));
-                machine_pic_label[machine_no]->setText(" ");
-                machine_table[machine_no].currently_made=nullptr;
-                k=0;
+            if(is_Safe()){
+                int k=1;
+                for(int i=0;i<machine_table[next_machine].buffer_capacity&&k==1;i++){
+                    if(machine_buf_pic_label[next_machine][i]->text()==" ") {
+                        machine_buf_pic_label[next_machine][i]->setText(QString::fromLatin1("  p%1_%2").arg(proces_no).arg(e.nr));
+                        machine_pic_label[machine_no]->setText(" ");
+                        machine_table[machine_no].currently_made=nullptr;
+                        k=0;
+                    }
+                }
+                            cout<<"Bezpieczny"<<endl;
             }
+            else {
+                cout<<"NIEezpieczny"<<endl;
+                machine_table[next_machine].elements_in_buffer.pop_back();
+                machine_table[machine_no].timer->start(500);
+
             }
         }
         else {machine_table[machine_no].timer->start(1000); return;}
@@ -454,6 +463,10 @@ void MainWindow::machine_actions(int machine_no){
        }
        machine_table[machine_no].timer->start(process_table[a.nr_procesu].times_at_machines[a.process_state]*1000);
     }
+
+  /*  for(int i=0;i<acctual_amount_of_machines;i++){
+        if(!machine_table[i].timer->isActive()) machine_actions(i);
+    }*/
 
 }
 
@@ -499,42 +512,87 @@ int MainWindow::prioritize(QVector<Element> elem_v){
 
 bool MainWindow::is_Safe(){
     QVector<Element> all_processes;
+    QVector<bool> koniec;
+    int *robocze=new int[acctual_amount_of_machines];
     for(int i=0;i<acctual_amount_of_machines;i++) {
+        int k=0;
         for(int j=0;j<machine_table[i].elements_in_buffer.size();j++) {
-            all_processes.push_back(machine_table[i].elements_in_buffer.at(1));
+            //all_processes.push_back(machine_table[i].elements_in_buffer.at(j));
+            //koniec.push_back(false);
+            ++k;
         }
-        all_processes.push_back(Element(machine_table[i].currently_made->nr, machine_table[i].currently_made->nr_procesu, machine_table[i].currently_made->process_state));
+        if(machine_table[i].currently_made!=nullptr) {
+            all_processes.push_back(Element(machine_table[i].currently_made->nr, machine_table[i].currently_made->nr_procesu, machine_table[i].currently_made->process_state));
+            koniec.push_back(false);
+            ++k;
+        }
+        robocze[i]=machine_table[i].getBuffer()+1-k;
     }
     int size=all_processes.size();
-    bool *koniec=new bool[size];
+    int **przydzial= new int*[size];
+    int **zadane= new int*[size];
     for(int i=0;i<size;i++) {
-        if(machine_table[i].currently_made!=nullptr) koniec[i]=false;
-        else koniec[i]=true;
+        przydzial[i]=new int[acctual_amount_of_machines];
+        zadane[i]=new int[acctual_amount_of_machines];
+        for(int j=0;j<acctual_amount_of_machines;j++) {przydzial[i][j]=0; zadane[i][j]=0;}
     }
-    return 0;
 
- /*   bool *koniec=new bool[acctual_amount_of_machines];
-    int *przydzial=new int[acctual_amount_of_machines];
-    for(int i=0;i<acctual_amount_of_machines;i++) {
-        if(machine_table[i].currently_made!=nullptr) koniec[i]=false;
-        else koniec[i]=true;
-    }
-    int ***zadane=new int**[acctual_amount_of_processes]; //first index sais which process do we have
-    for(int i=0;i<acctual_amount_of_machines;i++) {
-        zadane[i]=new int*[acctual_amount_of_machines];
-        for(int j=0;j<acctual_amount_of_machines;j++)   {
-            zadane[i][j]=new int[acctual_amount_of_machines];
-            for(int k=0;k<acctual_amount_of_machines;k++) zadane[i][j][k]=0;
+    for(int i=0;i<size;i++){
+    int machine=process_table[all_processes.at(i).nr_procesu].machine_order[all_processes.at(i).process_state];
+    przydzial[i][machine]=1;
+        for(int j=all_processes.at(i).process_state+1;j<process_table[all_processes.at(i).nr_procesu].size;j++){
+            zadane[i][process_table[all_processes.at(i).nr_procesu].machine_order[j]]=1;
         }
     }
-    for(int i=0;i<acctual_amount_of_machines;i++){
-        for(int j=0;j<process_table[i].size-1;j++){
-            zadane[i][process_table[i].machine_order[j]][process_table[i].machine_order[j+1]];
-        }
+    cout<<"zadane"<<endl;
+    for(int i=0;i<size;i++) {
+        for(int j=0;j<acctual_amount_of_machines;j++) cout<<zadane[i][j]<<" ";
+    cout<<endl;
     }
-    int *robocze=new int[acctual_amount_of_machines];
+    cout<<"przydzial"<<endl;
+    for(int i=0;i<size;i++) {
+        for(int j=0;j<acctual_amount_of_machines;j++) cout<<przydzial[i][j]<<" ";
+    cout<<endl;
+    }
+    cout<<"robocze"<<endl;
+    for(int i=0;i<acctual_amount_of_machines;i++) cout<<robocze[i]<<endl;
 
-    for(int i=0;i<acctual_amount_of_machines;i++) robocze[i]=machine_table[i].getBuffer();
-  */
+    int i=0;
+    int changed=0;
+    cout<<"size: "<<size<<endl;
+    for(;;){
+        cout<<"i"<<i<<endl;
+        if(koniec[i]==false){
+            bool flag=false;
+            cout<<"robocze"<<endl;
+            for(int k=0;k<acctual_amount_of_machines;k++) cout<<robocze[k]<<" ";
+            cout<<endl;
+            cout<<"zadane"<<endl;
+            for(int k=0;k<acctual_amount_of_machines;k++) cout<<zadane[i][k]<<" ";
+            cout<<endl;
+            for(int j=0;j<acctual_amount_of_machines;j++) {
+                if(zadane[i][j]<=robocze[j])  flag=true;
+                else {flag=false; break;}
+            }
+            if(flag){
+                for(int l=0;l<acctual_amount_of_machines;l++) robocze[l]=robocze[l]+przydzial[i][l];
+                koniec[i]=true;
+                changed+=1;
+                cout<<"changed"<<endl;
+
+
+            }
+        }
+        bool flag1=true;
+        for(int j=0;j<size;j++) if(koniec[j]!=true) flag1=false;
+        if(flag1) return true;
+
+        if(i==(size-1)&&changed==0) return false;
+        else if(i==size-1) changed=0;
+        i=i+1;
+        i=i%size;
+
+    }
+
 
 }
