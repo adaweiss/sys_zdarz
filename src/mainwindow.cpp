@@ -393,12 +393,12 @@ void MainWindow::machine_actions(int machine_no){
     machine_table[machine_no].timer->stop();
     if(machine_table[machine_no].currently_made!=nullptr) {
     int proces_no=machine_table[machine_no].currently_made->nr_procesu;
-    if(process_table[proces_no].size==machine_table[machine_no].currently_made->process_state+1)
+    if(process_table[proces_no].size==machine_table[machine_no].currently_made->process_state+1) //is it the last stage
     {
         machine_pic_label[machine_no]->setText(" ");
         machine_table[machine_no].currently_made=nullptr;
         no[proces_no]->setText(QString::fromLatin1("%1").arg(no[proces_no]->text().toInt()+1));
-        //wywal to całkiem
+        //just throw it away
     }
     else {
         Element e=Element(machine_table[machine_no].currently_made->nr,machine_table[machine_no].currently_made->nr_procesu,machine_table[machine_no].currently_made->process_state+1);
@@ -415,12 +415,13 @@ void MainWindow::machine_actions(int machine_no){
                         k=0;
                     }
                 }
-                            cout<<"Bezpieczny"<<endl;
+                cout<<"Bezpieczny"<<endl;
             }
             else {
                 cout<<"NIEezpieczny"<<endl;
                 machine_table[next_machine].elements_in_buffer.pop_back();
-                machine_table[machine_no].timer->start(500);
+                machine_table[machine_no].timer->start(1000);
+                //return;
 
             }
         }
@@ -464,9 +465,9 @@ void MainWindow::machine_actions(int machine_no){
        machine_table[machine_no].timer->start(process_table[a.nr_procesu].times_at_machines[a.process_state]*1000);
     }
 
-  /*  for(int i=0;i<acctual_amount_of_machines;i++){
-        if(!machine_table[i].timer->isActive()) machine_actions(i);
-    }*/
+    for(int i=0;i<acctual_amount_of_processes;i++){
+        if(!machine_table[process_table[i].machine_order[0]].timer->isActive()&& machine_table[process_table[i].machine_order[0]].getBuffer()==0) machine_actions(process_table[i].machine_order[0]);
+    }
 
 }
 
